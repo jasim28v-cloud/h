@@ -23,9 +23,9 @@
         #xp-progress { height: 100%; width: 0%; background: var(--neon-color); border-radius: 10px; transition: 1s; }
         .side-controls { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 25px; z-index: 50; }
         .glass-btn { width: 50px; height: 50px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; cursor: pointer; }
-        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-family: 'Orbitron'; font-size: 3rem; color: rgba(255, 255, 255, 0.05); pointer-events: none; z-index: 10; }
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-family: 'Orbitron'; font-size: 3rem; color: rgba(255, 255, 255, 0.08); pointer-events: none; z-index: 10; }
         .admin-panel { position: fixed; inset: 0; z-index: 1000; background: rgba(5,5,5,0.98); display: none; flex-direction: column; padding: 30px; backdrop-filter: blur(40px); overflow-y: auto; }
-        .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; text-align: center; }
+        .stat-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 15px; text-align: center; }
     </style>
 </head>
 <body>
@@ -39,11 +39,16 @@
         <i class="fas fa-fingerprint text-xl opacity-30 hover:opacity-100 neon-text cursor-pointer transition-all" onclick="checkAdminAuth()"></i>
     </header>
 
-    <main class="scroll-engine" id="video-stack"></main>
+    <main class="scroll-engine" id="video-stack">
+        <div class="h-full flex flex-col items-center justify-center">
+            <i class="fas fa-circle-notch fa-spin text-3xl neon-text mb-4"></i>
+            <span class="text-[10px] font-[Orbitron] animate-pulse uppercase tracking-[4px]">Initiating_Genesis...</span>
+        </div>
+    </main>
 
     <nav class="fixed bottom-5 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] h-16 glass-ui rounded-2xl flex justify-around items-center z-[200]">
         <i class="fas fa-home neon-text text-xl"></i>
-        <i class="fas fa-comment-dots opacity-60" onclick="toggleChatWithAd()"></i>
+        <i class="fas fa-comment-dots opacity-60" onclick="toggleSideChat()"></i>
         <div id="upload-trigger" class="w-12 h-12 bg-white text-black rounded-xl flex items-center justify-center active:scale-90 transition-transform">
             <i class="fas fa-plus"></i>
         </div>
@@ -53,40 +58,26 @@
     <div id="admin-overlay" class="admin-panel">
         <div class="flex justify-between items-center mb-8">
             <h2 class="text-xl font-[Orbitron] neon-text tracking-widest">CONTROL_CENTER</h2>
-            <i class="fas fa-times text-2xl opacity-20" onclick="toggleAdmin()"></i>
+            <i class="fas fa-times text-2xl opacity-20 cursor-pointer" onclick="toggleAdmin()"></i>
         </div>
         <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="stat-card border-b-2 border-cyan-500">
-                <div class="text-[10px] opacity-40 uppercase">Live Pulse</div>
-                <div class="text-3xl font-[Orbitron]" id="live-visitors">0</div>
-            </div>
-            <div class="stat-card border-b-2 border-pink-500">
-                <div class="text-[10px] opacity-40 uppercase">Total Nodes</div>
-                <div class="text-3xl font-[Orbitron]" id="total-clips">0</div>
-            </div>
+            <div class="stat-card border-b-2 border-cyan-500"><div class="text-[10px] opacity-40 uppercase">Live Pulse</div><div class="text-2xl font-[Orbitron]" id="live-visitors">0</div></div>
+            <div class="stat-card border-b-2 border-pink-500"><div class="text-[10px] opacity-40 uppercase">Total Nodes</div><div class="text-2xl font-[Orbitron]" id="total-clips">0</div></div>
         </div>
         <div id="admin-list" class="space-y-3"></div>
     </div>
 
     <div id="chat-overlay" class="fixed inset-0 z-[300] hidden flex-col glass-ui" style="background: rgba(0,0,0,0.95);">
-        <div class="p-4 flex justify-between border-b border-white/10">
-            <span class="neon-text font-[Orbitron] tracking-widest text-xs">ENCRYPTED_COMMS</span>
-            <i class="fas fa-chevron-down cursor-pointer" onclick="toggleChat()"></i>
-        </div>
+        <div class="p-4 flex justify-between border-b border-white/10"><span class="neon-text font-[Orbitron] tracking-widest text-xs">ENCRYPTED_COMMS</span><i class="fas fa-chevron-down cursor-pointer" onclick="toggleChat()"></i></div>
         <div id="chat-box" class="flex-1 p-5 overflow-y-auto space-y-4"></div>
-        <div class="p-4 flex gap-2 border-t border-white/10">
-            <input type="text" id="msg-input" class="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 outline-none" placeholder="Send secure packet...">
-            <button onclick="sendChat()" class="neon-text p-2"><i class="fas fa-paper-plane"></i></button>
-        </div>
+        <div class="p-4 flex gap-2 border-t border-white/10"><input type="text" id="msg-input" class="flex-1 bg-white/5 border border-white/10 rounded-xl p-3 outline-none" placeholder="Send packet..."><button onclick="sendChat()" class="neon-text p-2"><i class="fas fa-paper-plane"></i></button></div>
     </div>
 
     <script>
-        // SHADOW MIRAGE ONLINE 🔥🧠
         const ADMIN_PASS = "1234";
         const AD_LINKS = ["https://www.effectivegatecpm.com/bxwxuk2f39?key=566216691dc8b76a740840e94f68f44c", "https://www.effectivegatecpm.com/k60w64w4gk?key=564f3d8cc4ac85949f218179b742495e"];
         let currentAd = 0;
-        let isGlobalMuted = false;
-        let cachedData = null;
+        let videoDataCache = null;
 
         const SHADOW_ID = localStorage.getItem('shadow_uid') || 'UX_' + Math.floor(Math.random()*9999);
         localStorage.setItem('shadow_uid', SHADOW_ID);
@@ -96,18 +87,16 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // نظام الزوار المباشر (Presence Pulse)
         const presenceRef = db.ref('presence/' + SHADOW_ID);
-        presenceRef.set(true);
-        presenceRef.onDisconnect().remove();
+        presenceRef.set(true); presenceRef.onDisconnect().remove();
         db.ref('presence').on('value', s => { if(document.getElementById('live-visitors')) document.getElementById('live-visitors').innerText = s.numChildren(); });
 
         function triggerAd() { window.open(AD_LINKS[currentAd], '_blank'); currentAd = (currentAd + 1) % 2; addXP(10); }
-        function toggleChatWithAd() { triggerAd(); toggleChat(); }
+        function toggleSideChat() { triggerAd(); toggleChat(); }
+        function shareVideoWithAd() { triggerAd(); navigator.share({ title: 'SHΔDØW', url: window.location.href }).catch(() => {}); addXP(10); }
 
         function addXP(amount) {
-            userXP += amount;
-            localStorage.setItem('shadow_xp', userXP);
+            userXP += amount; localStorage.setItem('shadow_xp', userXP);
             const level = Math.floor(userXP / 500) + 1;
             const progress = (userXP % 500) / 5;
             document.getElementById('user-level').innerText = `LVL ${level} // OPERATIVE`;
@@ -115,11 +104,11 @@
         }
         addXP(0);
 
-        db.ref('videos').on('value', (snapshot) => {
+        db.ref('videos').on('value', (snap) => {
             const container = document.getElementById('video-stack');
-            const data = snapshot.val();
+            const data = snap.val();
             if(!data) return;
-            cachedData = data;
+            videoDataCache = data;
             document.getElementById('total-clips').innerText = Object.keys(data).length;
             
             container.innerHTML = '';
@@ -133,11 +122,11 @@
                     <div class="watermark">SHΔDØW GENESIS</div>
                     <video loop playsinline muted data-src="${vid.url}" onclick="this.paused?this.play():this.pause()"></video>
                     <div class="side-controls">
-                        <div class="glass-btn glass-ui ${isLiked ? 'neon-text' : ''}" onclick="toggleLike('${id}')">
+                        <div class="glass-btn glass-ui ${isLiked ? 'neon-text border-cyan-400/50' : ''}" onclick="toggleLike('${id}')">
                             <i class="fas fa-heart"></i><span class="text-[10px] font-black">${vid.likes || 0}</span>
                         </div>
-                        <div class="glass-btn glass-ui" onclick="toggleChatWithAd()"><i class="fas fa-terminal"></i><span class="text-[8px] mt-1">LOGS</span></div>
-                        <div class="glass-btn glass-ui" onclick="shareVideoWithAd()"><i class="fas fa-share-nodes"></i><span class="text-[8px] mt-1">SEND</span></div>
+                        <div class="glass-btn glass-ui" onclick="toggleSideChat()"><i class="fas fa-terminal"></i><span class="text-[8px] mt-1">LOGS</span></div>
+                        <div class="glass-btn glass-ui" onclick="shareVideoWithAd()"><i class="fas fa-share-nodes"></i><span class="text-[8px] mt-1 opacity-40">SEND</span></div>
                     </div>`;
                 fragment.appendChild(section);
             });
@@ -145,19 +134,18 @@
             initObserver();
         });
 
-        function renderAdmin() {
+        function renderAdminList() {
             const list = document.getElementById('admin-list'); list.innerHTML = '';
-            Object.keys(cachedData).reverse().forEach(id => {
-                const v = cachedData[id];
-                list.innerHTML += `<div class="bg-white/5 p-4 rounded-2xl flex items-center gap-4"><img class="w-12 h-12 rounded object-cover" src="${v.url.replace('.mp4', '.jpg')}"><div class="flex-1 text-[10px] opacity-30 font-mono">${id}</div><button onclick="deleteVideo('${id}')" class="text-red-500 p-2"><i class="fas fa-trash-alt"></i></button></div>`;
+            Object.keys(videoDataCache).reverse().forEach(id => {
+                const v = videoDataCache[id];
+                list.innerHTML += `<div class="bg-white/5 p-4 rounded-2xl flex items-center gap-4"><img class="w-12 h-12 rounded object-cover" src="${v.url.replace('.mp4', '.jpg')}"><span class="text-[10px] opacity-30 font-mono flex-1">${id.substring(0,12)}</span><button onclick="deleteVideo('${id}')" class="text-red-500 p-2"><i class="fas fa-trash-alt"></i></button></div>`;
             });
         }
 
-        function checkAdminAuth() { if (prompt("ACCESS KEY:") === ADMIN_PASS) { renderAdmin(); toggleAdmin(); } }
+        function checkAdminAuth() { if (prompt("ENTER KEY:") === ADMIN_PASS) { renderAdminList(); toggleAdmin(); } }
         function toggleAdmin() { const a = document.getElementById('admin-overlay'); a.style.display = a.style.display === 'flex' ? 'none' : 'flex'; }
-        function deleteVideo(id) { if(confirm("DELETE?")) { db.ref(`videos/${id}`).remove(); setTimeout(renderAdmin, 300); } }
+        function deleteVideo(id) { if(confirm("DELETE?")) { db.ref(`videos/${id}`).remove(); setTimeout(renderAdminList, 300); } }
         function toggleLike(id) { triggerAd(); db.ref(`videos/${id}`).transaction(p => { if (p) { if (!p.likedBy) p.likedBy = {}; if (p.likedBy[SHADOW_ID]) { p.likes=(p.likes||1)-1; delete p.likedBy[SHADOW_ID]; } else { p.likes=(p.likes||0)+1; p.likedBy[SHADOW_ID]=true; } } return p; }); }
-        function shareVideoWithAd() { triggerAd(); navigator.share({ title: 'SHΔDØW', url: window.location.href }).catch(() => {}); }
         function toggleChat() { const c = document.getElementById('chat-overlay'); c.classList.toggle('hidden'); c.classList.toggle('flex'); }
         function sendChat() { const i = document.getElementById('msg-input'); if(i.value.trim()){ db.ref('global_chat').push({user:SHADOW_ID, text:i.value}); i.value=''; addXP(5); } }
 
@@ -166,17 +154,24 @@
                 entries.forEach(e => {
                     const v = e.target.querySelector('video');
                     if(e.isIntersecting) {
-                        if(!v.src) v.src = v.dataset.src; // Lazy Loading
+                        if(!v.src) v.src = v.dataset.src;
                         v.play().catch(()=>{});
-                        const colors = ['#00f3ff', '#ff0055', '#00ffaa', '#ccff00'];
-                        document.documentElement.style.setProperty('--neon-color', colors[Math.floor(Math.random()*4)]);
+                        const colors = ['#00f3ff', '#ff0055', '#00ffaa', '#ccff00', '#7000ff'];
+                        document.documentElement.style.setProperty('--neon-color', colors[Math.floor(Math.random()*5)]);
                     } else { v.pause(); }
                 });
             }, { threshold: 0.65 });
             document.querySelectorAll('.video-segment').forEach(s => obs.observe(s));
         }
 
-        const widget = cloudinary.createUploadWidget({ cloudName: "dssk5tabb", uploadPreset: "bjebvo5p" }, (err, res) => {
+        // تحسين زر الرفع ليفتح الاستوديو مباشرة
+        const widget = cloudinary.createUploadWidget({ 
+            cloudName: "dssk5tabb", 
+            uploadPreset: "bjebvo5p",
+            sources: ['local'], // يفرض فتح الملفات المحلية فقط (الاستوديو)
+            multiple: false,
+            clientAllowedFormats: ["mp4", "mov", "webm"]
+        }, (err, res) => {
             if (!err && res.event === "success") { db.ref('videos/').push({ url: res.info.secure_url, sender: SHADOW_ID, likes: 0, timestamp: Date.now() }); addXP(150); }
         });
         document.getElementById("upload-trigger").onclick = () => widget.open();
@@ -188,6 +183,11 @@
             });
             b.scrollTop = b.scrollHeight;
         });
+
+        function shuffleProtocol() { 
+            const segs = document.querySelectorAll('.video-segment');
+            if(segs.length) segs[Math.floor(Math.random()*segs.length)].scrollIntoView({behavior:'smooth'});
+        }
 
         document.addEventListener('touchstart', () => { document.querySelectorAll('video').forEach(v => v.muted = false); }, { once: true });
     </script>
